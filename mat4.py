@@ -14,10 +14,22 @@ for x in file:
     from_TLV_to_x['origins']='תל אביב'
     from_TLV_to_x['destinations'] = x
     from_TLV_to_x['key'] = api_s
-    url = url_distance + urllib.parse.urlencode(from_TLV_to_x)
-    distance_TLV.append(dict())
-    distance_TLV[i][x]=requests.get(url).json()
-    i=i+1
+    try:
+        url = url_distance + urllib.parse.urlencode(from_TLV_to_x)
+        distance_TLV.append(dict())
+        results=requests.get(url)
+        if results.status_code==200: 
+            try:
+                distance_TLV[i][x]=results.json()
+                i=i+1
+            except:
+                print('json false')
+        else:
+            print("HTTP error")
+    except:
+        print('request false')
+        
+        
 distance=dict()
 duration=dict()
 j=0
@@ -35,7 +47,7 @@ for address in file:
         url="https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s" % (address, api_s)
         response=requests.get(url)
         if not response.status_code==200:
-            print("request alse")
+            print("HTTP error")
         else:
             try:
                loc[address]=response.json()
